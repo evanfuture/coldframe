@@ -1,0 +1,6 @@
+ansible/vendor
+ansible/group_vars/all/secrets
+.vagrant
+*-theme
+public/index.php
+sites/*
