@@ -1,0 +1,4 @@
+---
+- name: Create index.php file
+  template: src="index.j2"
+            dest="{{ public_root }}/index.php"

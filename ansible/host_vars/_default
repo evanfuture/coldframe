@@ -1,0 +1,22 @@
+---
+site_type: {{site_type}}
+site_title: {{site_title}}
+site_slug: "{{inventory_hostname | replace('.dev', '')}}"
+custom_theme: {{custom_theme}}
+custom_plugin: {{custom_plugin}}
+install_demo_database: {{install_demo_database}}
+defaults:
+  db_name: "{{ site_slug }}_db"
+  db_user: "{{ site_slug | truncate(12, True, '') }}_usr"
+  db_password: "{{ site_slug | truncate(11, True, '') }}_pass"
+  admin_user: "{{ site_slug}}"
+  admin_password: "{{ site_slug}}"
+  admin_email: {{admin_email}}
+live:
+  pull: false
+  media: null
+  live_url: null
+  live_secret: null
+
+public_root: "{{ www_root }}/sites/{{ site_slug }}/public"
+repo_owner: {{repo_owner}}

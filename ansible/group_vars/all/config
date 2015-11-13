@@ -1,0 +1,6 @@
+---
+www_root: /var/www
+public_root: "{{ www_root }}/public"
+mailhog_install_ssmtp: true
+acf_version: 5.3.1
+acf_license_b64: array('key' => '{{vault_acf_pro_key}}','url' => 'http://{{inventory_hostname}}')
