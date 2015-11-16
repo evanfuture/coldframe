@@ -1,13 +1,9 @@
 ---
 - name: Setup pre-commit-hook mysql dump action
-  template: src="pre-commit.j2"
-            dest="{{ public_root }}/../.git/hooks/pre-commit"
-            mode=0755
+  template: src="pre-commit.j2" dest="{{ public_root }}/../.git/hooks/pre-commit" mode=0755
 
 - name: Create .gitignore file
-  template: src="gitignore.j2"
-  	dest="{{ public_root }}/../.gitignore"
-            mode=0755
+  template: src="gitignore.j2" dest="{{ public_root }}/../.gitignore" mode=0755
 
 - include: theme.yml
 - include: plugin.yml
