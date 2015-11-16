@@ -1,9 +1,0 @@
----
-- name: Create Apache Config file
-  template: src="vhosts.conf.j2"
-                  dest=/etc/apache2/sites-available/{{ inventory_hostname }}.conf
-
-- name: a2ensite
-  command: a2ensite {{ inventory_hostname }}
-  notify:
-    - restart apache2
