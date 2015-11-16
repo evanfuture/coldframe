@@ -1,0 +1,99 @@
+---
+- name: Remove Hello Dolly
+  command: wp plugin delete hello --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+
+- name: Remove Akismet
+  command: wp plugin delete akismet --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+
+# Install WB Sync DB
+
+- name: Install WP Sync DB
+  command: curl https://github.com/wp-sync-db/wp-sync-db/archive/master.zip -Lo wp-sync-db.zip
+  args:
+    chdir: "{{ public_root }}/"
+
+- name: Install WP Sync DB
+  command: wp plugin install {{ public_root }}/wp-sync-db.zip --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/wp-sync-db/"
+
+- name: Remove WP Sync DB Zip file
+  file: path="{{ public_root }}/wp-sync-db.zip" state=absent
+
+# Install WB Sync DB Media Files
+
+- name: Install WP Sync DB Media Files
+  command: curl https://github.com/wp-sync-db/wp-sync-db-media-files/archive/master.zip -Lo wp-sync-db-media-files.zip
+  args:
+    chdir: "{{ public_root }}/"
+
+- name: Install WP Sync DB Media Files
+  command: wp plugin install {{ public_root }}/wp-sync-db-media-files.zip --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/wp-sync-db-media-files/"
+
+- name: Remove WP Sync DB Media Files Zip file
+  file: path="{{ public_root }}/wp-sync-db-media-files.zip" state=absent
+
+# Install WB Sync DB CLI
+
+- name: Install WP Sync DB CLI
+  command: curl https://github.com/wp-sync-db/wp-sync-db-cli/archive/master.zip -Lo wp-sync-db-cli.zip
+  args:
+    chdir: "{{ public_root }}/"
+
+- name: Install WP Sync DB CLI
+  command: wp plugin install {{ public_root }}/wp-sync-db-cli.zip --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/wp-sync-db-cli/"
+
+- name: Remove WP Sync DB CLI Zip file
+  file: path="{{ public_root }}/wp-sync-db-cli.zip" state=absent
+
+# Install ACF Pro
+
+- name: Download ACF Pro
+  command: curl http://connect.advancedcustomfields.com/index.php?t={{acf_version}}&p=pro&a=download&k={{ vault_acf_pro_key}} -o acfpro.zip
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/advanced-custom-fields-pro/"
+
+- name: Install ACF Pro
+  command: wp plugin install {{ public_root }}/acfpro.zip --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/advanced-custom-fields-pro/"
+
+- name: Prepare ACF Pro license activation
+  command: wp option add acf_pro_license {{ acf_license_b64 | b64encode }} --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Remove ACF Pro Zip file
+  file: path="{{ public_root }}/acfpro.zip" state=absent
+
+- name: Install Duplicate Post
+  command: wp plugin install duplicate-post --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/duplicate-post/"
+
+- name: Install Manual Image Crop
+  command: wp plugin install manual-image-crop --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/manual-image-crop/"
+
+- name: Install Simple Page Ordering
+  command: wp plugin install simple-page-ordering --allow-root --activate
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/simple-page-ordering/"

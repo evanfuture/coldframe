@@ -1,0 +1,10 @@
+---
+- name: Pull in Live Site Database & Media
+  command: wp wpsdb pull {{ hostvars[inventory_hostname]['live']['live_url'] }} {{ hostvars[inventory_hostname]['live']['live_secret'] }}
+           --preserve-active-plugins
+           --allow-root
+           {{ hostvars[inventory_hostname]['live']['media'] }}
+  args:
+    chdir: "{{ public_root }}/"
+  when: hostvars[inventory_hostname]['live']['pull'] == True
+  ignore_errors: yes

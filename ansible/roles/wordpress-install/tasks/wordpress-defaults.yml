@@ -1,0 +1,69 @@
+---
+- name: Remove "Just another Wordpress Site"
+  command: wp option update blogdescription '' --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Timezone Defaults to Dublin
+  command: wp option update timezone_string 'Europe/Dublin' --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Rename Post Category Uncategorized to General
+  command: wp term update category 1 --name=General --slug=general --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Set a Page as Front Page
+  command: wp option update show_on_front 'page' --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Set Page 2 as Front Page
+  command: wp option update page_on_front 2 --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Rename Sample Page to Home
+  command: wp post update 2 --post_title="Home" --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+#- name: Change Sample Page Text to something else.
+ # command: --allow-root
+ # when: site_status.stderr == ""
+
+#- name: Turn Comments off by default (maybe use a plugin too?)
+ # command: --allow-root
+ # when: site_status.stderr == ""
+
+- name: Media into a single folder
+  command: wp option update uploads_use_yearmonth_folders 0 --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Remove current month folder from uploads
+  file: path="{{ public_root }}/wp-content/uploads/2015" state=absent
+
+#- name: Remove twentythirteen & twentyfourteen themes (and twentyfifteen once the custom theme is activated)
+ # command: --allow-root
+ # when: site_status.stderr == ""
+
+- name: permalinks to /%postname%/
+  command: wp option update permalink_structure '/%postname%/' --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: site_status.stderr == ""
+
+- name: Set custom theme as default
+  command: wp theme activate {{site_slug}}-theme --allow-root
+  args:
+    chdir: "{{public_root}}"
+  when: site_repo_status.stderr is defined and custom_theme == True

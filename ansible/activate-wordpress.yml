@@ -1,0 +1,16 @@
+---
+- name: "Activate Specified Wordpress Site"
+  hosts: wordpress
+  sudo: yes
+  remote_user: vagrant
+  vars_files:
+    - "group_vars/all/config"
+    - "group_vars/all/secrets"
+    - "host_vars/{{ inventory_hostname }}"
+
+  roles:
+    - { role: git } # Either creates a git project or pulls down an existing one.
+    - { role: vhost-config } # Sets up the box to forward site_slug.dev to ./sites/site_slug/public/
+    - { role: database } # Creates the mysql database used for this site.
+    - { role: wordpress-setup } # Creates a git-hook to dump database on commit, and creates/pulls-down a custom wordpress theme and plugin, if required
+    - { role: wordpress-install } # Sets up Wordpress, installs plugins, gets everything up and running.  Also imports live site if set in config.

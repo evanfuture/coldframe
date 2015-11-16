@@ -1,0 +1,16 @@
+---
+- name: Create database for site
+  mysql_db: name="{{ hostvars[inventory_hostname]['defaults']['db_name'] }}"
+            state=present
+            login_host="localhost"
+            login_user="root"
+            login_password="root"
+
+- name: Assign database user to db and grant permissions
+  mysql_user: name="{{ hostvars[inventory_hostname]['defaults']['db_user'] }}"
+              password="{{ hostvars[inventory_hostname]['defaults']['db_password']  }}"
+              priv="{{ hostvars[inventory_hostname]['defaults']['db_name'] }}.*:ALL"
+              state=present
+              login_host="localhost"
+              login_user="root"
+              login_password="root"

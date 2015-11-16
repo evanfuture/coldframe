@@ -1,0 +1,2 @@
+#!/bin/bash
+ssh vagrant@{{inventory_hostname}} "cd {{ public_root }} && wp db export ../{{ hostvars[inventory_hostname]['site_slug']}}.sql && cd .. && git add {{ hostvars[inventory_hostname]['site_slug']}}.sql"

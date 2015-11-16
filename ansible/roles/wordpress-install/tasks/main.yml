@@ -1,0 +1,77 @@
+---
+- name: WP Download
+  command: wp core download
+            --allow-root
+            --path="{{ public_root }}/"
+  register: site_status
+  ignore_errors: yes
+
+- name: WP Config
+  command: wp core config
+            --allow-root
+            --dbname="{{ hostvars[inventory_hostname]['defaults']['db_name'] }}"
+            --dbuser="{{ hostvars[inventory_hostname]['defaults']['db_user'] }}"
+            --dbpass="{{ hostvars[inventory_hostname]['defaults']['db_password'] }}"
+            --extra-php="define('WP_DEBUG', true); define('WP_DEBUG_LOG', true ); define('WP_DEBUG_DISPLAY', false ); define('SAVEQUERIES', true);"
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-config.php"
+  when: site_status.stderr == ""
+
+- name: Install WP
+  command: wp core install
+           --allow-root
+           --url="http://{{ inventory_hostname }}"
+           --title="{{ site_title }}"
+           --admin_user="{{ hostvars[inventory_hostname]['defaults']['admin_user'] }}"
+           --admin_password="{{ hostvars[inventory_hostname]['defaults']['admin_password'] }}"
+           --admin_email="{{ hostvars[inventory_hostname]['defaults']['admin_email'] }}"
+  args:
+    chdir: "{{ public_root }}"
+
+- include: wordpress-defaults.yml
+
+- include: install-plugins.yml
+
+- name: Download Test Data XML
+  command: curl -OL https://raw.githubusercontent.com/manovotny/wptest/master/wptest.xml
+  args:
+    chdir: "{{ public_root }}/"
+  when: install_demo_database == True
+
+- name: Install Wordpress Importer
+  command: wp plugin install wordpress-importer --activate --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+    creates: "{{ public_root }}/wp-content/plugins/wordpress-importer/"
+  when: install_demo_database == True
+
+- name: Install Test Data
+  command: wp import wptest.xml --authors=create --allow-root
+  args:
+    chdir: "{{ public_root }}/"
+  when: install_demo_database == True
+
+- name: Remove Test Data XML
+  file: path="{{ public_root }}/wp-test.xml" state=absent
+  when: install_demo_database == True
+
+# Install Local Repo DB
+- name: Check if sql dump exists
+  stat: path="{{ public_root }}/../{{site_slug}}.sql"
+  register: has_db
+
+- name: Import DB
+  command: wp db import ../{{site_slug}}.sql --allow-root
+  args:
+    chdir: "{{public_root}}"
+  when: has_db.stat.exists == True
+
+- include: live-pull.yml
+
+- name: build theme
+  local_action: shell npm install && bower install && gulp
+  become: false
+  args:
+    chdir: ../sites/{{site_slug}}/public/wp-content/themes/{{site_slug}}-theme
+  when: custom_theme == True

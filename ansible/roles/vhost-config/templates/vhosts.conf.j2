@@ -1,0 +1,8 @@
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        ServerName {{ inventory_hostname }}
+        ServerAlias www.{{ inventory_hostname }}
+        DocumentRoot /var/www/sites/{{ hostvars[inventory_hostname]['site_slug'] }}/public
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>

@@ -1,0 +1,88 @@
+---
+- name: Check if THEME repo exists
+  git: repo=git@bitbucket.org:{{repo_owner}}/{{site_slug}}-theme.git dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme clone=no update=no accept_hostkey=true
+  register: theme_repo_status
+  ignore_errors: yes
+  sudo: false
+
+# IF repo does exist:
+
+- name: Pull repo into correct folder
+  git: repo=git@bitbucket.org:{{repo_owner}}/{{site_slug}}-theme.git dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme accept_hostkey=true version=develop
+  sudo: false
+  ignore_errors: yes
+  when: theme_repo_status.stderr is not defined
+
+# IF repo doesn't exist:
+
+- name: Clone Thyme Theme
+  git: repo=git@github.com:evanfuture/thyme.git dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme accept_hostkey=true
+  sudo: false
+  ignore_errors: yes
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Remove git folder
+  file: path="{{ public_root }}/wp-content/themes/{{site_slug}}-theme/.git/" state=absent
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Get List of Theme Files
+  shell: /bin/sh -c 'find . -name \*'
+  args:
+    chdir: "{{ public_root }}/wp-content/themes/{{site_slug}}-theme/"
+  register: dumpfiles
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Replace thyme string with site_slug
+  replace: dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme/{{ item }} regexp='thyme' replace='{{ site_slug }}'
+  with_items: dumpfiles.stdout_lines
+  ignore_errors: yes
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Replace Thyme string with SiteTitle
+  replace: dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme/{{ item }} regexp='Thyme' replace='{{ site_title | replace(' ', '') | replace('-', '')  }}'
+  with_items: dumpfiles.stdout_lines
+  ignore_errors: yes
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Init Local Repo
+  command: git init
+  args:
+    chdir: "{{ public_root }}/wp-content/themes/{{site_slug}}-theme/"
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Add files to Local Repo
+  command: git add -A
+  args:
+    chdir: "{{ public_root }}/wp-content/themes/{{site_slug}}-theme/"
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Commit files to Local Repo
+  command: git commit -m 'Initial commit'
+  args:
+    chdir: "{{ public_root }}/wp-content/themes/{{site_slug}}-theme/"
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
+- name: Create Remote Repo
+  command: bb create_from_local -u {{vault_bitbucket_user}} -p {{vault_bitbucket_password}} -P ssh -c
+  args:
+    chdir: "{{ public_root }}/wp-content/themes/{{site_slug}}-theme/"
+  when: theme_repo_status.stderr is defined and custom_theme == True
+  ignore_errors: yes
+  sudo: false
+
+
+
+# ENDIF
+
+- name: Create Theme symlink
+  shell: /bin/sh -c 'ln -s ./public/wp-content/themes/{{site_slug}}-theme'
+  args:
+    chdir: "{{ public_root }}/../"
+  when: custom_theme == True
+  ignore_errors: yes
+
+- name: Setup pre-commit-hook mysql dump action
+  template: src="pre-commit.j2"
+            dest="{{ public_root }}/wp-content/themes/{{site_slug}}-theme/.git/hooks/pre-commit"
+            mode=0755
+  when: custom_theme == True
