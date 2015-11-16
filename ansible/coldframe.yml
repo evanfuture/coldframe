@@ -10,5 +10,5 @@
     - { role: common }
     - { role: mailhog }
     - { role: coldframe-dev }
-    - { role: wp-cli }
+    #- { role: wp-cli }
 # To setup our box, we install common tools first, including Mailhog to catch any outgoing mail, wp-cli just in case, and a starter php page in the "public" directory.  That's all.  Anything we want to have in the box that's not specific to an individual site should go in this playbook.  Within the Vagrantfile, we scan for hosts and variables, so in order to add a new site, we just have to add it to the hosts file, then have a host_vars file named after it.

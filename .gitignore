@@ -1,6 +1,6 @@
+.coldframe_vault_pass
 ansible/vendor
-ansible/group_vars/all/secrets
+ansible/group_vars/all/secrets_user
 .vagrant
-*-theme
-public/index.php
 sites/*
+public/*

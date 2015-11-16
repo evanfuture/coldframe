@@ -11,7 +11,7 @@ ANSIBLE_PATH = 'ansible'
 # Set Ansible roles_path relative to Ansible directory
 ENV['ANSIBLE_ROLES_PATH'] = File.join(ANSIBLE_PATH, 'vendor', 'roles')
 
-vault_pass = '../.vault_pass'
+vault_pass = './.coldframe_vault_pass'
 ansible_hosts = File.join(ANSIBLE_PATH, 'hosts')
 
 Vagrant.require_version '>= 1.7.4'
