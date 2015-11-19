@@ -3,4 +3,6 @@ ansible/vendor
 ansible/group_vars/all/secrets_user
 .vagrant
 sites/*
+!sites/.gitkeep
 public/*
+!public/.gitkeep
