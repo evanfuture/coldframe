@@ -44,6 +44,11 @@
   ignore_errors: yes
   when: theme_repo_status.stderr is defined and custom_theme == True
 
+- name: Replace example.dev string with site_slug.dev
+  replace: dest={{ public_root }}/wp-content/themes/{{site_slug}}-theme/assets/manifest.json regexp='example' replace='{{ site_slug }}'
+  ignore_errors: yes
+  when: theme_repo_status.stderr is defined and custom_theme == True
+
 - name: Init Local Repo
   command: git init
   args:

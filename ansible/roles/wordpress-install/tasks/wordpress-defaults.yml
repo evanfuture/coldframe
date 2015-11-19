@@ -66,4 +66,4 @@
   command: wp theme activate {{site_slug}}-theme --allow-root
   args:
     chdir: "{{public_root}}"
-  when: site_repo_status.stderr is defined and custom_theme == True
+  when: custom_theme == True
