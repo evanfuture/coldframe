@@ -1,0 +1,13 @@
+---
+- name: "Activate Specified Wordpress Site"
+  hosts: php
+  sudo: yes
+  remote_user: vagrant
+  vars_files:
+    - "group_vars/all/config"
+    - "group_vars/all/secrets"
+    - "host_vars/{{ inventory_hostname }}"
+
+  roles:
+    - { role: git } # Either creates a git project or pulls down an existing one.
+    - { role: vhost-config } # Sets up the box to forward site_slug.dev to ./sites/site_slug/public/
