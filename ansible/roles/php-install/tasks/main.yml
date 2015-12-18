@@ -1,0 +1,13 @@
+---
+- name: Run Yeoman Generator
+  command: yo gulp-webapp
+  args:
+    chdir: "{{ www_root }}/sites/{{site_slug }}"
+
+- name: Rename app folder to public
+  command: mv app public
+  args:
+    chdir: "{{ www_root }}/sites/{{site_slug }}"
+
+- name: Replace 'app' instances in gulpfile
+  replace: dest={{ www_root }}/sites/{{site_slug }}/gulpfile.babel.js regexp='app' replace='public'

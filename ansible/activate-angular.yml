@@ -1,5 +1,5 @@
 ---
-- name: "Activate Specified Bare Php Site"
+- name: "Activate Specified Angular Site"
   hosts: php
   sudo: yes
   remote_user: vagrant
@@ -11,4 +11,4 @@
   roles:
     - { role: git } # Either creates a git project or pulls down an existing one.
     - { role: vhost-config } # Sets up the box to forward site_slug.dev to ./sites/site_slug/public/
-    - { role: php-install } # Sets up a base gulp site with a yeoman generator and renames a few files.
+    - { role: angular-install } # Sets up a base gulp site with a yeoman generator and renames a few files.

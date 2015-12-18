@@ -29,3 +29,4 @@
 - npm: name=bower global=yes
 - npm: name=yo global=yes
 - npm: name=generator-gulp-webapp global=yes
+- npm: name=generator-gulp-angular global=yes

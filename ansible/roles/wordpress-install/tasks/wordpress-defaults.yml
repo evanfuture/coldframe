@@ -52,10 +52,6 @@
 - name: Remove current month folder from uploads
   file: path="{{ public_root }}/wp-content/uploads/2015" state=absent
 
-#- name: Remove twentythirteen & twentyfourteen themes (and twentyfifteen once the custom theme is activated)
- # command: --allow-root
- # when: site_status.stderr == ""
-
 - name: permalinks to /%postname%/
   command: wp option update permalink_structure '/%postname%/' --allow-root
   args:
@@ -67,3 +63,15 @@
   args:
     chdir: "{{public_root}}"
   when: custom_theme == True
+
+- name: Remove twentythirteen theme
+  file: path="{{ public_root }}/wp-content/themes/twentythirteen" state=absent
+  when: site_status.stderr == ""
+
+- name: Remove twentyfourteen theme
+  file: path="{{ public_root }}/wp-content/themes/twentyfourteen" state=absent
+  when: site_status.stderr == ""
+
+- name: Remove twentyfifteen theme (only when custom theme is active)
+  file: path="{{ public_root }}/wp-content/themes/twentyfifteen" state=absent
+  when: site_status.stderr == "" and custom_theme == True
